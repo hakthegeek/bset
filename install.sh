@@ -1,4 +1,5 @@
 #!/bin/bash
+# bset install script from https://github.com/hakthegeek/bset
 sudo apt-get -y update
 sudo apt-get -y upgrade
 
@@ -18,8 +19,23 @@ sudo apt-get install -y git
 sudo apt-get install -y rename
 sudo apt-get install -y xargs
 
+GITHUB_USER="hakthegeek"
+function clone_repo() {
+    local upstream_owner="$1"
+    local repo="$2"
+    local target="${3:-$repo}"
+    local user_url="https://github.com/$GITHUB_USER/$repo.git"
+    local upstream_url="https://github.com/$upstream_owner/$repo.git"
+
+    if git ls-remote --exit-code "$user_url" > /dev/null 2>&1; then
+        git clone "$user_url" "$target"
+    else
+        git clone "$upstream_url" "$target"
+    fi
+}
+
 echo "installing bash_profile aliases from recon_profile"
-git clone https://github.com/nahamsec/recon_profile.git
+clone_repo nahamsec recon_profile
 cd recon_profile
 cat bash_profile >> ~/.bash_profile
 source ~/.bash_profile
@@ -83,7 +99,7 @@ sudo snap install chromium
 echo "done"
 
 echo "installing JSParser"
-git clone https://github.com/nahamsec/JSParser.git
+clone_repo nahamsec JSParser
 cd JSParser*
 sudo python setup.py install
 cd ~/tools/
@@ -117,7 +133,7 @@ echo "done"
 
 
 echo "installing lazys3"
-git clone https://github.com/nahamsec/lazys3.git
+clone_repo nahamsec lazys3
 cd ~/tools/
 echo "done"
 
@@ -137,7 +153,7 @@ cd ~/tools/
 echo "done"
 
 echo "installing lazyrecon"
-git clone https://github.com/nahamsec/lazyrecon.git
+clone_repo nahamsec lazyrecon
 cd ~/tools/
 echo "done"
 
